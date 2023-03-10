@@ -6,27 +6,25 @@
 namespace Etcd\Tests;
 
 use Etcd\Client;
+use PHPUnit\Framework\TestCase;
 
-class ClientTest extends \PHPUnit_Framework_TestCase
+class ClientTest extends TestCase
 {
-    /**
-     * @var \Etcd\Client;
-     */
-    protected $client;
+    protected Client $client;
 
-    protected $key = '/test';
+    protected string $key = '/test';
 
-    protected $role = 'root';
-    protected $user = 'root';
-    protected $password = '123456';
+    protected string $role = 'root';
+    protected string $user = 'root';
+    protected string $password = '123456';
 
-    public function setUp()
+    protected function setUp(): void
     {
-        $this->client = new Client();
+        $this->client = new Client(version: 'v3beta');
         $this->client->setPretty(true);
     }
 
-    public function testPutAndRange()
+    public function testPutAndRange(): void
     {
         $value = 'testput';
         $this->client->put($this->key, $value);
@@ -36,26 +34,26 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($value, $body[$this->key]);
     }
 
-    public function testGetAllKeys()
+    public function testGetAllKeys(): void
     {
         $body = $this->client->getAllKeys();
         $this->assertNotEmpty($body);
     }
 
-    public function testGetKeysWithPrefix()
+    public function testGetKeysWithPrefix(): void
     {
         $body = $this->client->getKeysWithPrefix('/');
         $this->assertNotEmpty($body);
     }
 
-    public function testDeleteRange()
+    public function testDeleteRange(): void
     {
         $this->client->del($this->key);
         $body = $this->client->get($this->key);
         $this->assertArrayNotHasKey($this->key, $body);
     }
 
-    public function testGrant()
+    public function testGrant(): void
     {
         $body = $this->client->grant(3600);
         $this->assertArrayHasKey('ID', $body);
@@ -70,28 +68,28 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->client->revoke($id);
     }
 
-    public function testAddRole()
+    public function testAddRole(): void
     {
-        $this->client->addRole($this->role);
+        self::assertEquals([], $this->client->addRole($this->role));
     }
 
-    public function testAddUser()
+    public function testAddUser(): void
     {
         $this->client->addUser($this->user, $this->password);
     }
 
-    public function testChangeUserPassword()
+    public function testChangeUserPassword(): void
     {
         $this->client->changeUserPassword($this->user, '456789');
         $this->client->changeUserPassword($this->user, $this->password);
     }
 
-    public function testGrantUserRole()
+    public function testGrantUserRole(): void
     {
         $this->client->grantUserRole($this->user, $this->role);
     }
 
-    public function testGetRole()
+    public function testGetRole(): void
     {
         $this->client->getRole($this->role);
     }
