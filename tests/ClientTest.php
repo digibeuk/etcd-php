@@ -20,7 +20,7 @@ class ClientTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->client = new Client(version: 'v3beta');
+        $this->client = new Client();
         $this->client->setPretty(true);
     }
 
